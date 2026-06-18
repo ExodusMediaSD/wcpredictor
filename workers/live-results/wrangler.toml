@@ -1,0 +1,16 @@
+# Wrangler configuration for Exodus World Cup Predictor Worker API
+name = "exoduswcpredictor"
+main = "index.js"
+compatibility_date = "2026-06-11"
+
+[triggers]
+crons = [ "*/5 * * * *" ]
+
+[vars]
+ENVIRONMENT = "production"
+
+# Note: Set secrets via CLI before deploying:
+# npx wrangler secret put SUPABASE_URL
+# npx wrangler secret put SUPABASE_SERVICE_ROLE_KEY
+# npx wrangler secret put SEED_TOKEN
+# npx wrangler secret put ZAFRONIX_API_KEY
