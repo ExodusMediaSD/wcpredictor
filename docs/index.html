@@ -1,0 +1,256 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>GGO WC 2026 Predictor – Maintenance</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800;900&family=DM+Sans:wght@300;400;500;600&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="icon"
+      type="image/png"
+      sizes="32x32"
+      href="https://gulfglobaloutsourcing.com/wp-content/uploads/2024/11/GGO-White-Var3-32x32.png"
+    />
+    <style>
+      :root {
+        --wc-blue: #00d15e;
+        --wc-red: #00b359;
+        --dark: #06080f;
+        --light: #f5f5f5;
+        --muted: #a0a0a0;
+        --warning: #f59e0b;
+        --font-display: "Barlow Condensed", "Arial Narrow", sans-serif;
+        --font-body: "DM Sans", "Segoe UI", sans-serif;
+      }
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      html,
+      body {
+        font-family: var(--font-body);
+        background: var(--dark);
+        color: var(--light);
+        min-height: 100vh;
+      }
+
+      body {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+        padding: 20px;
+        background:
+          linear-gradient(
+            180deg,
+            rgba(6, 8, 15, 0.96) 0%,
+            rgba(6, 8, 15, 0.98) 100%
+          ),
+          repeating-linear-gradient(
+            135deg,
+            rgba(255, 255, 255, 0.03) 0 1px,
+            transparent 1px 11px
+          );
+      }
+
+      .card {
+        background:
+          linear-gradient(
+            145deg,
+            rgba(12, 17, 24, 0.98) 0%,
+            rgba(6, 36, 24, 0.78) 100%
+          ),
+          repeating-linear-gradient(
+            135deg,
+            rgba(255, 255, 255, 0.04) 0 1px,
+            transparent 1px 9px
+          );
+        border: 2px solid rgba(0, 209, 94, 0.32);
+        border-radius: 8px;
+        padding: 42px 36px 36px;
+        max-width: 460px;
+        width: 100%;
+        box-shadow: 0 18px 34px rgba(0, 0, 0, 0.26);
+        text-align: center;
+      }
+
+      /* Logos row */
+      .logos {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 16px;
+        margin-bottom: 28px;
+      }
+
+      .logos img {
+        height: 48px;
+        width: auto;
+        object-fit: contain;
+      }
+
+      .logos img.wc-logo {
+        height: 52px;
+      }
+
+      .logo-divider {
+        width: 1px;
+        height: 36px;
+        background: rgba(0, 209, 94, 0.4);
+      }
+
+      /* App title */
+      .app-title {
+        font-family: var(--font-display);
+        font-size: 28px;
+        font-weight: 900;
+        letter-spacing: 0.4px;
+        text-transform: uppercase;
+        margin-bottom: 4px;
+      }
+
+      .app-title span {
+        color: var(--wc-red);
+      }
+
+      .app-sub {
+        font-size: 11px;
+        color: var(--muted);
+        letter-spacing: 0.4px;
+        text-transform: uppercase;
+        margin-bottom: 28px;
+      }
+
+      .divider {
+        height: 1px;
+        background: rgba(0, 209, 94, 0.35);
+        margin: 0 0 28px;
+      }
+
+      /* Icon */
+      .status-icon {
+        font-size: 48px;
+        margin-bottom: 18px;
+        display: block;
+        animation: pulse 2.4s ease-in-out infinite;
+      }
+
+      @keyframes pulse {
+        0%,
+        100% {
+          opacity: 1;
+          transform: scale(1);
+        }
+        50% {
+          opacity: 0.65;
+          transform: scale(0.94);
+        }
+      }
+
+      /* Heading */
+      .heading {
+        font-family: var(--font-display);
+        font-size: 22px;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        color: var(--warning);
+        margin-bottom: 14px;
+      }
+
+      /* Message */
+      .message {
+        font-size: 14px;
+        line-height: 1.65;
+        color: #d1d5db;
+      }
+
+      .message strong {
+        color: var(--light);
+      }
+
+      /* Time badge */
+      .time-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        margin-top: 22px;
+        background: rgba(0, 209, 94, 0.08);
+        border: 1px solid rgba(0, 209, 94, 0.3);
+        border-radius: 20px;
+        padding: 8px 18px;
+        font-size: 13px;
+        color: var(--wc-blue);
+        font-weight: 600;
+        letter-spacing: 0.3px;
+      }
+
+      .time-badge .dot {
+        width: 7px;
+        height: 7px;
+        border-radius: 50%;
+        background: var(--wc-blue);
+        animation: blink 1.4s ease-in-out infinite;
+      }
+
+      @keyframes blink {
+        0%,
+        100% {
+          opacity: 1;
+        }
+        50% {
+          opacity: 0.2;
+        }
+      }
+
+      @media (max-width: 480px) {
+        .card {
+          padding: 30px 20px 28px;
+        }
+        .logos img {
+          height: 36px;
+        }
+        .logos img.wc-logo {
+          height: 40px;
+        }
+        .app-title {
+          font-size: 22px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="card">
+      <!-- Logos -->
+      <div class="logos">
+        <img
+          src="https://gulfglobaloutsourcing.com/wp-content/uploads/2024/11/GGO-White-Var3.png"
+          alt="GGO"
+        />
+        <div class="logo-divider"></div>
+        <img
+          src="fifa-world-cup-2026-logo-white.png"
+          alt="FIFA World Cup 2026"
+          class="wc-logo"
+        />
+      </div>
+
+      <div class="app-title">GGO <span>WC</span> 2026</div>
+      <div class="app-sub">Prediction Game</div>
+
+      <div class="divider"></div>
+
+      <span class="status-icon">🔥</span>
+
+      <div class="heading">Temporarily Unavailable</div>
+    </div>
+  </body>
+</html>

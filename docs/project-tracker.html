@@ -1,0 +1,736 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GGO WC 2026 — Project Tracker</title>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;800&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #07090f;
+  --surface: #0f1320;
+  --surface2: #161d2e;
+  --border: rgba(0,61,165,0.2);
+  --blue: #003DA5;
+  --red: #C8102E;
+  --green: #10B981;
+  --yellow: #F59E0B;
+  --muted: #6b7fa3;
+  --text: #e8edf8;
+  --text2: #a3b0cc;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min-height:100vh;overflow-x:hidden}
+a{color:inherit;text-decoration:none}
+
+/* HEADER */
+header{background:linear-gradient(180deg,rgba(0,61,165,0.15) 0%,transparent 100%);border-bottom:2px solid var(--blue);padding:20px 32px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;backdrop-filter:blur(12px)}
+.h-logo{display:flex;align-items:center;gap:14px}
+.h-logo-badge{background:var(--blue);color:#fff;font-family:'Barlow Condensed',sans-serif;font-size:11px;font-weight:700;letter-spacing:2px;padding:4px 10px;border-radius:4px;text-transform:uppercase}
+.h-title{font-family:'Barlow Condensed',sans-serif;font-size:22px;font-weight:700;letter-spacing:1px}
+.h-title span{color:var(--red)}
+.h-meta{font-size:12px;color:var(--muted);font-family:'DM Sans',sans-serif}
+.h-score{display:flex;align-items:center;gap:10px}
+.health-pill{background:rgba(239,68,68,0.12);border:1px solid rgba(239,68,68,0.35);border-radius:8px;padding:6px 14px;font-family:'Barlow Condensed',sans-serif;font-size:18px;font-weight:700;letter-spacing:1px;color:#EF4444}
+.health-pill.ok{background:rgba(16,185,129,0.12);border-color:rgba(16,185,129,0.35);color:#10B981}
+.health-pill.warn{background:rgba(245,158,11,0.12);border-color:rgba(245,158,11,0.35);color:#F59E0B}
+.health-label{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:1px}
+
+/* LAYOUT */
+.page{max-width:1320px;margin:0 auto;padding:32px 24px}
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+.grid-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:20px}
+.grid-4{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
+@media(max-width:900px){.grid-2,.grid-3{grid-template-columns:1fr}.grid-4{grid-template-columns:1fr 1fr}}
+
+/* SECTION */
+.section{margin-bottom:40px}
+.section-label{font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:var(--blue);margin-bottom:16px;display:flex;align-items:center;gap:10px}
+.section-label::after{content:'';flex:1;height:1px;background:linear-gradient(90deg,var(--border),transparent)}
+
+/* CARDS */
+.card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:20px;transition:border-color 0.2s}
+.card:hover{border-color:rgba(0,61,165,0.45)}
+.card-title{font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:8px}
+.card-value{font-family:'Barlow Condensed',sans-serif;font-size:42px;font-weight:800;line-height:1;margin-bottom:4px}
+.card-sub{font-size:12px;color:var(--muted)}
+.blue{color:var(--blue)}
+.red{color:var(--red)}
+.green{color:var(--green)}
+.yellow{color:var(--yellow)}
+
+/* FEATURE TABLE */
+.feature-table{width:100%;border-collapse:collapse}
+.feature-table thead th{padding:10px 14px;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:1px;color:var(--muted);text-align:left;border-bottom:1px solid var(--border)}
+.feature-table tbody tr{border-bottom:1px solid rgba(255,255,255,0.04);transition:background 0.15s}
+.feature-table tbody tr:hover{background:rgba(0,61,165,0.05)}
+.feature-table tbody tr:last-child{border-bottom:none}
+.feature-table td{padding:12px 14px;font-size:13px;vertical-align:middle}
+.feat-name{font-weight:500;display:flex;align-items:center;gap:8px}
+.feat-area{font-size:11px;background:var(--surface2);border-radius:4px;padding:2px 6px;color:var(--muted)}
+
+/* STATUS BADGES */
+.badge{display:inline-flex;align-items:center;gap:5px;padding:3px 10px;border-radius:999px;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;white-space:nowrap}
+.badge-done{background:rgba(16,185,129,0.12);border:1px solid rgba(16,185,129,0.3);color:#10B981}
+.badge-wip{background:rgba(245,158,11,0.12);border:1px solid rgba(245,158,11,0.3);color:#F59E0B}
+.badge-blocked{background:rgba(239,68,68,0.12);border:1px solid rgba(239,68,68,0.3);color:#EF4444}
+.badge-todo{background:rgba(107,127,163,0.12);border:1px solid rgba(107,127,163,0.3);color:var(--muted)}
+.badge::before{content:'';width:6px;height:6px;border-radius:50%;background:currentColor;flex-shrink:0}
+
+/* BUG TABLE */
+.bug-row-p0{border-left:3px solid #EF4444!important}
+.bug-row-p1{border-left:3px solid #F59E0B!important}
+.bug-row-p2{border-left:3px solid var(--blue)!important}
+.bug-row-p3{border-left:3px solid var(--muted)!important}
+.severity{font-family:'Barlow Condensed',sans-serif;font-size:14px;font-weight:800;letter-spacing:1px}
+.sev-p0{color:#EF4444}
+.sev-p1{color:#F59E0B}
+.sev-p2{color:var(--blue)}
+.sev-p3{color:var(--muted)}
+
+/* PROGRESS */
+.progress-wrap{background:var(--surface2);border-radius:999px;height:8px;overflow:hidden;margin-top:10px}
+.progress-bar{height:100%;border-radius:999px;transition:width 0.6s ease}
+.bar-green{background:linear-gradient(90deg,var(--green),#059669)}
+.bar-yellow{background:linear-gradient(90deg,var(--yellow),#d97706)}
+.bar-red{background:linear-gradient(90deg,var(--red),#991b1b)}
+.bar-blue{background:linear-gradient(90deg,var(--blue),#0052cc)}
+
+/* SCORING VISUAL */
+.score-table{width:100%}
+.score-row{display:flex;align-items:center;gap:12px;padding:10px 14px;border-bottom:1px solid rgba(255,255,255,0.04)}
+.score-row:last-child{border-bottom:none}
+.score-pts{font-family:'Barlow Condensed',sans-serif;font-size:26px;font-weight:800;min-width:40px;text-align:right;flex-shrink:0}
+.score-desc{font-size:13px;color:var(--text2);flex:1}
+.score-x{font-size:11px;color:var(--muted);flex-shrink:0}
+
+/* TIMELINE */
+.timeline{display:flex;flex-direction:column;gap:0}
+.tl-item{display:flex;gap:14px;padding:14px 0;border-bottom:1px solid rgba(255,255,255,0.04)}
+.tl-item:last-child{border-bottom:none}
+.tl-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0;margin-top:4px;background:var(--muted)}
+.tl-dot.done{background:var(--green)}
+.tl-dot.active{background:var(--yellow);box-shadow:0 0 8px var(--yellow)}
+.tl-dot.todo{background:var(--border);border:2px solid var(--muted)}
+.tl-date{font-size:11px;color:var(--muted);min-width:70px;flex-shrink:0;font-family:'Barlow Condensed',sans-serif;font-weight:600;letter-spacing:0.5px;margin-top:1px}
+.tl-content{}
+.tl-title{font-weight:600;font-size:13px;margin-bottom:3px}
+.tl-desc{font-size:12px;color:var(--muted)}
+
+/* ARCH VISUAL */
+.arch-row{display:flex;align-items:center;gap:6px;margin:6px 0;font-size:12px;color:var(--text2);font-family:'DM Sans',monospace}
+.arch-box{background:var(--surface2);border:1px solid var(--border);border-radius:6px;padding:5px 10px;font-size:11px;font-family:'Barlow Condensed',sans-serif;font-weight:700;letter-spacing:1px;white-space:nowrap}
+.arch-box.primary{border-color:rgba(0,61,165,0.6);color:var(--blue)}
+.arch-box.backend{border-color:rgba(245,158,11,0.5);color:var(--yellow)}
+.arch-box.store{border-color:rgba(16,185,129,0.5);color:var(--green)}
+.arch-arrow{color:var(--muted);font-size:14px}
+
+/* TOURNAMENT BRACKET MINI */
+.bracket-mini{display:flex;gap:8px;overflow-x:auto;padding:4px 0}
+.bracket-stage{display:flex;flex-direction:column;gap:6px;min-width:90px}
+.bracket-stage-label{font-size:10px;color:var(--muted);text-align:center;letter-spacing:1px;text-transform:uppercase;margin-bottom:4px;font-family:'Barlow Condensed',sans-serif;font-weight:600}
+.bracket-slot{background:var(--surface2);border:1px solid var(--border);border-radius:5px;padding:5px 8px;font-size:10px;color:var(--text2);text-align:center;min-height:28px;display:flex;align-items:center;justify-content:center}
+.bracket-slot.active{border-color:rgba(0,61,165,0.5);color:var(--blue)}
+.bracket-slot.tbd{color:var(--muted);font-style:italic}
+
+.tag{display:inline-block;padding:2px 7px;border-radius:4px;font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;margin:1px}
+.tag-be{background:rgba(239,68,68,0.1);color:#EF4444;border:1px solid rgba(239,68,68,0.25)}
+.tag-fe{background:rgba(0,61,165,0.1);color:#60a5fa;border:1px solid rgba(0,61,165,0.25)}
+.tag-data{background:rgba(16,185,129,0.1);color:#10B981;border:1px solid rgba(16,185,129,0.25)}
+.tag-ux{background:rgba(168,85,247,0.1);color:#a78bfa;border:1px solid rgba(168,85,247,0.25)}
+
+/* TABS */
+.tabs{display:flex;gap:4px;margin-bottom:20px;border-bottom:1px solid var(--border);padding-bottom:0}
+.tab{padding:8px 18px;font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:1px;color:var(--muted);cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px;transition:all 0.2s;border-radius:0;background:none;border-top:none;border-left:none;border-right:none}
+.tab:hover{color:var(--text)}
+.tab.active{color:var(--blue);border-bottom-color:var(--blue)}
+.tab-content{display:none}
+.tab-content.active{display:block}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="h-logo">
+    <div class="h-logo-badge">GGO</div>
+    <div>
+      <div class="h-title">WC 2026 <span>Predictor</span> — Project Tracker</div>
+      <div class="h-meta">Last updated: Jun 11, 2026 · ggowcpredictor</div>
+    </div>
+  </div>
+  <div class="h-score">
+    <div>
+      <div class="health-label">Audit Score</div>
+      <div style="font-size:11px;color:var(--muted)">10/20 · Acceptable</div>
+    </div>
+    <div class="health-pill">10/20</div>
+  </div>
+</header>
+
+<div class="page">
+
+  <!-- TABS -->
+  <div class="tabs">
+    <button class="tab active" onclick="switchTab('overview',this)">Overview</button>
+    <button class="tab" onclick="switchTab('features',this)">Features</button>
+    <button class="tab" onclick="switchTab('bugs',this)">Bugs</button>
+    <button class="tab" onclick="switchTab('scoring',this)">Scoring</button>
+    <button class="tab" onclick="switchTab('architecture',this)">Architecture</button>
+  </div>
+
+  <!-- ═══ OVERVIEW ═══ -->
+  <div id="tab-overview" class="tab-content active">
+
+    <!-- KPI CARDS -->
+    <div class="section">
+      <div class="section-label">Project Health</div>
+      <div class="grid-4">
+        <div class="card">
+          <div class="card-title">Fixtures</div>
+          <div class="card-value green">104</div>
+          <div class="card-sub">matches in worldcup.json ✓</div>
+        </div>
+        <div class="card">
+          <div class="card-title">Firestore Status</div>
+          <div class="card-value yellow">⚠</div>
+          <div class="card-sub">fixture seed not confirmed</div>
+        </div>
+        <div class="card">
+          <div class="card-title">Audit Score</div>
+          <div class="card-value red">10<span style="font-size:20px;color:var(--muted)">/20</span></div>
+          <div class="card-sub">acceptable — needs work</div>
+        </div>
+        <div class="card">
+          <div class="card-title">P0 Bugs</div>
+          <div class="card-value red">1</div>
+          <div class="card-sub">savePrediction crash</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- AUDIT DIMENSIONS -->
+    <div class="section">
+      <div class="section-label">Audit Dimensions</div>
+      <div class="grid-2">
+        <div class="card">
+          <div style="display:flex;flex-direction:column;gap:14px">
+            <div>
+              <div style="display:flex;justify-content:space-between;margin-bottom:4px"><span style="font-size:13px;font-weight:500">Accessibility</span><span style="font-family:'Barlow Condensed',sans-serif;font-weight:700;color:var(--red)">1/4</span></div>
+              <div class="progress-wrap"><div class="progress-bar bar-red" style="width:25%"></div></div>
+              <div style="font-size:11px;color:var(--muted);margin-top:4px">Missing ARIA, no focus styles, label/input not linked</div>
+            </div>
+            <div>
+              <div style="display:flex;justify-content:space-between;margin-bottom:4px"><span style="font-size:13px;font-weight:500">Performance</span><span style="font-family:'Barlow Condensed',sans-serif;font-weight:700;color:var(--yellow)">2/4</span></div>
+              <div class="progress-wrap"><div class="progress-bar bar-yellow" style="width:50%"></div></div>
+              <div style="font-size:11px;color:var(--muted);margin-top:4px">Duplicate sync calls, blind 30s interval re-renders</div>
+            </div>
+            <div>
+              <div style="display:flex;justify-content:space-between;margin-bottom:4px"><span style="font-size:13px;font-weight:500">Responsive Design</span><span style="font-family:'Barlow Condensed',sans-serif;font-weight:700;color:var(--green)">3/4</span></div>
+              <div class="progress-wrap"><div class="progress-bar bar-green" style="width:75%"></div></div>
+              <div style="font-size:11px;color:var(--muted);margin-top:4px">Two breakpoints work; leaderboard and standings now collapse better on phones</div>
+            </div>
+            <div>
+              <div style="display:flex;justify-content:space-between;margin-bottom:4px"><span style="font-size:13px;font-weight:500">Theming</span><span style="font-family:'Barlow Condensed',sans-serif;font-weight:700;color:var(--yellow)">2/4</span></div>
+              <div class="progress-wrap"><div class="progress-bar bar-yellow" style="width:50%"></div></div>
+              <div style="font-size:11px;color:var(--muted);margin-top:4px">Token system exists; toast + badge colors hardcoded</div>
+            </div>
+            <div>
+              <div style="display:flex;justify-content:space-between;margin-bottom:4px"><span style="font-size:13px;font-weight:500">Anti-Patterns</span><span style="font-family:'Barlow Condensed',sans-serif;font-weight:700;color:var(--yellow)">2/4</span></div>
+              <div class="progress-wrap"><div class="progress-bar bar-yellow" style="width:50%"></div></div>
+              <div style="font-size:11px;color:var(--muted);margin-top:4px">Glassmorphism login, toast CSS inside media query, 3 scoring implementations</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- TIMELINE -->
+        <div class="card">
+          <div class="card-title">Milestone Timeline</div>
+          <div class="timeline">
+            <div class="tl-item">
+              <div class="tl-dot done"></div>
+              <div class="tl-date">Jun 10</div>
+              <div class="tl-content"><div class="tl-title">Repo orientation + docs</div><div class="tl-desc">PROJECT_BRIEF, ERROR_REDUCTION, WORKLOG created</div></div>
+            </div>
+            <div class="tl-item">
+              <div class="tl-dot done"></div>
+              <div class="tl-date">Jun 10</div>
+              <div class="tl-content"><div class="tl-title">Flags + lock window + API fallback</div><div class="tl-desc">Country flags, 15-min lock, game data API URL</div></div>
+            </div>
+            <div class="tl-item">
+              <div class="tl-dot active"></div>
+              <div class="tl-date">Jun 11 →</div>
+              <div class="tl-content"><div class="tl-title" style="color:var(--yellow)">Audit + architecture docs</div><div class="tl-desc">Full audit, SCORING, ARCHITECTURE, SETUP, this visualizer</div></div>
+            </div>
+            <div class="tl-item">
+              <div class="tl-dot todo"></div>
+              <div class="tl-date">Next</div>
+              <div class="tl-content"><div class="tl-title" style="color:var(--muted)">Fix P0/P1 bugs</div><div class="tl-desc">savePrediction, firebaseConfig ref, matchId bridge, scoring unification</div></div>
+            </div>
+            <div class="tl-item">
+              <div class="tl-dot todo"></div>
+              <div class="tl-date">Before launch</div>
+              <div class="tl-content"><div class="tl-title" style="color:var(--muted)">Seed fixtures + live scores</div><div class="tl-desc">Run seedFixturesFromJSON, set API key, enable triggers</div></div>
+            </div>
+            <div class="tl-item">
+              <div class="tl-dot todo"></div>
+              <div class="tl-date">Post group stage</div>
+              <div class="tl-content"><div class="tl-title" style="color:var(--muted)">Mini Tourney launch</div><div class="tl-desc">¼-point knockout-only sub-game activates after Jun 27</div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /overview -->
+
+  <!-- ═══ FEATURES ═══ -->
+  <div id="tab-features" class="tab-content">
+    <div class="card">
+      <table class="feature-table">
+        <thead>
+          <tr>
+            <th>Feature</th>
+            <th>Area</th>
+            <th>Status</th>
+            <th>Notes</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><div class="feat-name">Login with username + code</div></td>
+            <td><span class="tag tag-fe">Frontend</span><span class="tag tag-data">Data</span></td>
+            <td><span class="badge badge-done">Done</span></td>
+            <td style="font-size:12px;color:var(--muted)">Firestore-first with demo fallback</td>
+          </tr>
+          <tr>
+            <td><div class="feat-name">Fixture loading (104 matches)</div></td>
+            <td><span class="tag tag-data">Data</span></td>
+            <td><span class="badge badge-done">Done</span></td>
+            <td style="font-size:12px;color:var(--muted)">From Apps Script → Firestore → local JSON</td>
+          </tr>
+          <tr>
+            <td><div class="feat-name">Country flags on all views</div></td>
+            <td><span class="tag tag-fe">Frontend</span></td>
+            <td><span class="badge badge-done">Done</span></td>
+            <td style="font-size:12px;color:var(--muted)">From worldcup.teams.json or Firestore teams/</td>
+          </tr>
+          <tr>
+            <td><div class="feat-name">Prediction card inputs</div></td>
+            <td><span class="tag tag-fe">Frontend</span></td>
+            <td><span class="badge badge-wip">In Progress</span></td>
+            <td style="font-size:12px;color:var(--muted)">Renders OK; savePrediction has P0 bug</td>
+          </tr>
+          <tr>
+            <td><div class="feat-name">15-min prediction lock</div></td>
+            <td><span class="tag tag-fe">Frontend</span></td>
+            <td><span class="badge badge-done">Done</span></td>
+            <td style="font-size:12px;color:var(--muted)">Client-side only — must add backend enforcement for prod</td>
+          </tr>
+          <tr>
+            <td><div class="feat-name">Group standings (from predictions)</div></td>
+            <td><span class="tag tag-fe">Frontend</span></td>
+            <td><span class="badge badge-done">Done</span></td>
+            <td style="font-size:12px;color:var(--muted)">Calculated live from user predictions</td>
+          </tr>
+          <tr>
+            <td><div class="feat-name">Knockout bracket view</div></td>
+            <td><span class="tag tag-fe">Frontend</span></td>
+            <td><span class="badge badge-wip">In Progress</span></td>
+            <td style="font-size:12px;color:var(--muted)">Renders flat list; needs visual bracket design</td>
+          </tr>
+          <tr>
+            <td><div class="feat-name">Results view (live scores)</div></td>
+            <td><span class="tag tag-fe">Frontend</span><span class="tag tag-be">Backend</span></td>
+            <td><span class="badge badge-blocked">Blocked</span></td>
+            <td style="font-size:12px;color:var(--muted)">matchId mismatch — API IDs don't map to fixture IDs</td>
+          </tr>
+          <tr>
+            <td><div class="feat-name">Leaderboard (all players)</div></td>
+            <td><span class="tag tag-be">Backend</span></td>
+            <td><span class="badge badge-blocked">Blocked</span></td>
+            <td style="font-size:12px;color:var(--muted)">leaderboard.js now reads Firestore users/predictions/results and writes leaderboard/current</td>
+          </tr>
+          <tr>
+            <td><div class="feat-name">Unified scoring system</div></td>
+            <td><span class="tag tag-be">Backend</span><span class="tag tag-fe">Frontend</span></td>
+            <td><span class="badge badge-blocked">Blocked</span></td>
+            <td style="font-size:12px;color:var(--muted)">3 conflicting implementations. SCORING.md is now the canonical reference</td>
+          </tr>
+          <tr>
+            <td><div class="feat-name">Round multipliers (R16 ×2, QF ×3...)</div></td>
+            <td><span class="tag tag-be">Backend</span><span class="tag tag-fe">Frontend</span></td>
+            <td><span class="badge badge-todo">To Do</span></td>
+            <td style="font-size:12px;color:var(--muted)">Defined in SCORING.md — not yet implemented</td>
+          </tr>
+          <tr>
+            <td><div class="feat-name">Live score sync (API-Football)</div></td>
+            <td><span class="tag tag-be">Backend</span></td>
+            <td><span class="badge badge-blocked">Blocked</span></td>
+            <td style="font-size:12px;color:var(--muted)">fetchAndUpdateLiveScores is written; needs API key + matchId bridge</td>
+          </tr>
+          <tr>
+            <td><div class="feat-name">Fixture seeding to Firestore</div></td>
+            <td><span class="tag tag-be">Backend</span></td>
+            <td><span class="badge badge-blocked">Blocked</span></td>
+            <td style="font-size:12px;color:var(--muted)">seedFixturesFromJSON fails — reads from wrong Drive location</td>
+          </tr>
+          <tr>
+            <td><div class="feat-name">Mini Tourney (¼ pt, post group stage)</div></td>
+            <td><span class="tag tag-be">Backend</span><span class="tag tag-fe">Frontend</span></td>
+            <td><span class="badge badge-todo">To Do</span></td>
+            <td style="font-size:12px;color:var(--muted)">Design: separate leaderboard, activates after Jun 27. Defined in SCORING.md</td>
+          </tr>
+          <tr>
+            <td><div class="feat-name">Admin panel</div></td>
+            <td><span class="tag tag-fe">Frontend</span></td>
+            <td><span class="badge badge-wip">In Progress</span></td>
+            <td style="font-size:12px;color:var(--muted)">Shows fixture/prediction/result counts only. No admin actions yet</td>
+          </tr>
+          <tr>
+            <td><div class="feat-name">Bracket prediction (knockout self-advance)</div></td>
+            <td><span class="tag tag-fe">Frontend</span></td>
+            <td><span class="badge badge-todo">To Do</span></td>
+            <td style="font-size:12px;color:var(--muted)">Predicted group winners should auto-populate R32 slots</td>
+          </tr>
+          <tr>
+            <td><div class="feat-name">Toast on sync failure</div></td>
+            <td><span class="tag tag-ux">UX</span></td>
+            <td><span class="badge badge-todo">To Do</span></td>
+            <td style="font-size:12px;color:var(--muted)">Silent fail currently</td>
+          </tr>
+          <tr>
+            <td><div class="feat-name">ARIA labels + keyboard nav</div></td>
+            <td><span class="tag tag-ux">UX</span></td>
+            <td><span class="badge badge-todo">To Do</span></td>
+            <td style="font-size:12px;color:var(--muted)">label[for], aria-current, aria-label on score inputs</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div><!-- /features -->
+
+  <!-- ═══ BUGS ═══ -->
+  <div id="tab-bugs" class="tab-content">
+    <div class="card">
+      <table class="feature-table">
+        <thead>
+          <tr>
+            <th style="width:60px">Sev</th>
+            <th>Bug</th>
+            <th>File / Line</th>
+            <th>Category</th>
+            <th style="width:80px">Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr class="bug-row-p0">
+            <td><span class="severity sev-p0">P0</span></td>
+            <td style="font-size:13px;font-weight:500"><code>savePrediction</code> crashes when match is locked — references undefined <code>prediction</code> and <code>match</code> variables in the locked branch</td>
+            <td style="font-size:11px;color:var(--muted)">app.js L430–461</td>
+            <td><span class="tag tag-fe">Frontend</span></td>
+            <td><span class="badge badge-blocked">Open</span></td>
+          </tr>
+          <tr class="bug-row-p1">
+            <td><span class="severity sev-p1">P1</span></td>
+            <td style="font-size:13px;font-weight:500"><code>main.js:getFixtures</code> and <code>syncAllData</code> now use the shared Firebase/Supabase collection loader</td>
+            <td style="font-size:11px;color:var(--muted)">src/main.js</td>
+            <td><span class="tag tag-be">Backend</span></td>
+            <td><span class="badge badge-done">Done</span></td>
+          </tr>
+          <tr class="bug-row-p1">
+            <td><span class="severity sev-p1">P1</span></td>
+            <td style="font-size:13px;font-weight:500">Stage multipliers are documented in scoring rules but still need a runtime implementation pass</td>
+            <td style="font-size:11px;color:var(--muted)">docs/SCORING.md, scripts/app.js, src/leaderboard.js</td>
+            <td><span class="tag tag-be">Backend</span><span class="tag tag-fe">Frontend</span></td>
+            <td><span class="badge badge-blocked">Open</span></td>
+          </tr>
+          <tr class="bug-row-p1">
+            <td><span class="severity sev-p1">P1</span></td>
+            <td style="font-size:13px;font-weight:500">Live results use API-Football fixture IDs as <code>matchId</code>; fixtures use sequential integers. Results will never display</td>
+            <td style="font-size:11px;color:var(--muted)">src/fixtures.js L136–153</td>
+            <td><span class="tag tag-be">Backend</span><span class="tag tag-data">Data</span></td>
+            <td><span class="badge badge-blocked">Open</span></td>
+          </tr>
+          <tr class="bug-row-p1">
+            <td><span class="severity sev-p1">P1</span></td>
+            <td style="font-size:13px;font-weight:500"><code>leaderboard.js:calculateAndUpdateLeaderboard</code> now paginates Firestore, falls back to Supabase, and writes both stores</td>
+            <td style="font-size:11px;color:var(--muted)">src/leaderboard.js, src/supabase.js</td>
+            <td><span class="tag tag-be">Backend</span></td>
+            <td><span class="badge badge-done">Done</span></td>
+          </tr>
+          <tr class="bug-row-p1">
+            <td><span class="severity sev-p1">P1</span></td>
+            <td style="font-size:13px;font-weight:500"><code>seedFixturesFromJSON</code> reads from Google Drive — file doesn't exist there. Seed fails silently</td>
+            <td style="font-size:11px;color:var(--muted)">src/fixtures.js L13</td>
+            <td><span class="tag tag-be">Backend</span></td>
+            <td><span class="badge badge-blocked">Open</span></td>
+          </tr>
+          <tr class="bug-row-p1">
+            <td><span class="severity sev-p1">P1</span></td>
+            <td style="font-size:13px;font-weight:500"><code>loadResultsFromApi</code> fetches <code>?action=sync</code> — duplicate of <code>loadGameData</code>. Double API quota use on every sync</td>
+            <td style="font-size:11px;color:var(--muted)">app.js L1047–1062</td>
+            <td><span class="tag tag-fe">Frontend</span></td>
+            <td><span class="badge badge-blocked">Open</span></td>
+          </tr>
+          <tr class="bug-row-p2">
+            <td><span class="severity sev-p2">P2</span></td>
+            <td style="font-size:13px;font-weight:500">Toast CSS is inside <code>@media (max-width: 480px)</code> — toast is invisible on desktop</td>
+            <td style="font-size:11px;color:var(--muted)">style.css L1115–1141</td>
+            <td><span class="tag tag-fe">Frontend</span></td>
+            <td><span class="badge badge-blocked">Open</span></td>
+          </tr>
+          <tr class="bug-row-p2">
+            <td><span class="severity sev-p2">P2</span></td>
+            <td style="font-size:13px;font-weight:500"><code>showToast</code> declared inside <code>savePrediction</code> — inaccessible from rest of app</td>
+            <td style="font-size:11px;color:var(--muted)">app.js L473–484</td>
+            <td><span class="tag tag-fe">Frontend</span></td>
+            <td><span class="badge badge-blocked">Open</span></td>
+          </tr>
+          <tr class="bug-row-p2">
+            <td><span class="severity sev-p2">P2</span></td>
+            <td style="font-size:13px;font-weight:500"><code>setInterval</code> re-renders full DOM every 30s without checking <code>document.hidden</code></td>
+            <td style="font-size:11px;color:var(--muted)">app.js L62–68</td>
+            <td><span class="tag tag-fe">Frontend</span></td>
+            <td><span class="badge badge-blocked">Open</span></td>
+          </tr>
+          <tr class="bug-row-p2">
+            <td><span class="severity sev-p2">P2</span></td>
+            <td style="font-size:13px;font-weight:500">Login labels have no <code>for</code> attribute — clicking label doesn't focus input; screen readers don't link them</td>
+            <td style="font-size:11px;color:var(--muted)">index.html L45–54</td>
+            <td><span class="tag tag-ux">UX</span></td>
+            <td><span class="badge badge-blocked">Open</span></td>
+          </tr>
+          <tr class="bug-row-p2">
+            <td><span class="severity sev-p2">P2</span></td>
+            <td style="font-size:13px;font-weight:500">Hardcoded hex colors bypass design tokens: <code>#FFD700</code>, <code>#C0C0C0</code>, <code>#CD7F32</code>, <code>#10B981</code>, <code>#EF4444</code> in toast/badges</td>
+            <td style="font-size:11px;color:var(--muted)">style.css L788–799, L1120, L1139</td>
+            <td><span class="tag tag-fe">Frontend</span></td>
+            <td><span class="badge badge-blocked">Open</span></td>
+          </tr>
+          <tr class="bug-row-p3">
+            <td><span class="severity sev-p3">P3</span></td>
+            <td style="font-size:13px;font-weight:500">Typo: <code>matcheCompared</code> (missing 's') in <code>comparePlayerHeadToHead</code> return object</td>
+            <td style="font-size:11px;color:var(--muted)">src/leaderboard.js L174</td>
+            <td><span class="tag tag-be">Backend</span></td>
+            <td><span class="badge badge-todo">Open</span></td>
+          </tr>
+          <tr class="bug-row-p3">
+            <td><span class="severity sev-p3">P3</span></td>
+            <td style="font-size:13px;font-weight:500">No toast/message on sync failure — user sees stale data with no explanation</td>
+            <td style="font-size:11px;color:var(--muted)">app.js L244–249</td>
+            <td><span class="tag tag-ux">UX</span></td>
+            <td><span class="badge badge-todo">Open</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div><!-- /bugs -->
+
+  <!-- ═══ SCORING ═══ -->
+  <div id="tab-scoring" class="tab-content">
+    <div class="grid-2">
+      <div class="card">
+        <div class="card-title">Main Game — Base Points</div>
+        <div style="margin-top:10px">
+          <div class="score-row">
+            <div class="score-pts green">15</div>
+            <div class="score-desc"><strong>Exact score</strong><br><span style="font-size:11px;color:var(--muted)">e.g. predicted 2-1, actual 2-1</span></div>
+          </div>
+          <div class="score-row">
+            <div class="score-pts" style="color:var(--blue)">8</div>
+            <div class="score-desc"><strong>Correct outcome + GD within 1</strong><br><span style="font-size:11px;color:var(--muted)">e.g. predicted 2-0, actual 3-0 — GD gap = 0</span></div>
+          </div>
+          <div class="score-row">
+            <div class="score-pts yellow">5</div>
+            <div class="score-desc"><strong>Correct outcome only</strong><br><span style="font-size:11px;color:var(--muted)">Right W/D/L, GD off by 2+</span></div>
+          </div>
+          <div class="score-row">
+            <div class="score-pts" style="color:var(--muted)">3</div>
+            <div class="score-desc"><strong>Wrong outcome, close call</strong><br><span style="font-size:11px;color:var(--muted)">Off by ≤1 per team total ≤2</span></div>
+          </div>
+          <div class="score-row">
+            <div class="score-pts red">0</div>
+            <div class="score-desc"><strong>No match</strong></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Round Multipliers</div>
+        <div style="margin-top:10px">
+          <div class="score-row">
+            <div class="score-pts" style="font-size:18px;color:var(--muted)">×1</div>
+            <div class="score-desc"><strong>Group Stage</strong> · Matchday 1–17<br><span style="font-size:11px;color:var(--muted)">72 matches · Jun 11–27</span></div>
+          </div>
+          <div class="score-row">
+            <div class="score-pts" style="font-size:18px;color:var(--muted)">×1</div>
+            <div class="score-desc"><strong>Round of 32</strong><br><span style="font-size:11px;color:var(--muted)">16 matches · Jun 28–Jul 3</span></div>
+          </div>
+          <div class="score-row">
+            <div class="score-pts" style="font-size:18px;color:var(--blue)">×2</div>
+            <div class="score-desc"><strong>Round of 16</strong><br><span style="font-size:11px;color:var(--muted)">8 matches · Jul 4–7 · Max 30 pts</span></div>
+          </div>
+          <div class="score-row">
+            <div class="score-pts" style="font-size:18px;color:var(--yellow)">×3</div>
+            <div class="score-desc"><strong>Quarter-final</strong><br><span style="font-size:11px;color:var(--muted)">4 matches · Jul 9–11 · Max 45 pts</span></div>
+          </div>
+          <div class="score-row">
+            <div class="score-pts" style="font-size:18px;color:var(--red)">×4</div>
+            <div class="score-desc"><strong>Semi-final</strong><br><span style="font-size:11px;color:var(--muted)">2 matches · Jul 14–15 · Max 60 pts</span></div>
+          </div>
+          <div class="score-row">
+            <div class="score-pts" style="font-size:18px;color:var(--green)">×5</div>
+            <div class="score-desc"><strong>Final + 3rd Place</strong><br><span style="font-size:11px;color:var(--muted)">Jul 18–19 · Max 75 pts</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Mini Tourney (¼ pts · Starts after group stage)</div>
+        <div style="font-size:12px;color:var(--muted);margin-bottom:12px">Activates Jun 28. Only knockout predictions count. Separate leaderboard.</div>
+        <div>
+          <div class="score-row">
+            <div class="score-pts green" style="font-size:20px">3</div>
+            <div class="score-desc">Exact score</div>
+          </div>
+          <div class="score-row">
+            <div class="score-pts" style="font-size:20px;color:var(--blue)">2</div>
+            <div class="score-desc">Correct outcome + GD within 1</div>
+          </div>
+          <div class="score-row">
+            <div class="score-pts yellow" style="font-size:20px">1</div>
+            <div class="score-desc">Correct outcome only</div>
+          </div>
+          <div class="score-row">
+            <div class="score-pts red" style="font-size:20px">0</div>
+            <div class="score-desc">Wrong outcome / no match</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Tournament Structure</div>
+        <div class="bracket-mini">
+          <div class="bracket-stage">
+            <div class="bracket-stage-label">Group Stage</div>
+            <div class="bracket-slot active">A–L</div>
+            <div class="bracket-slot active" style="font-size:9px;color:var(--green)">72 matches</div>
+            <div class="bracket-slot active" style="font-size:9px;color:var(--green)">Jun 11–27</div>
+          </div>
+          <div style="display:flex;align-items:center;color:var(--muted);font-size:18px">›</div>
+          <div class="bracket-stage">
+            <div class="bracket-stage-label">Round of 32</div>
+            <div class="bracket-slot tbd">16 matches</div>
+            <div class="bracket-slot tbd" style="font-size:9px">Jun 28–Jul 3</div>
+            <div class="bracket-slot tbd" style="font-size:9px">×1 pts</div>
+          </div>
+          <div style="display:flex;align-items:center;color:var(--muted);font-size:18px">›</div>
+          <div class="bracket-stage">
+            <div class="bracket-stage-label">Round of 16</div>
+            <div class="bracket-slot tbd">8 matches</div>
+            <div class="bracket-slot tbd" style="font-size:9px">Jul 4–7</div>
+            <div class="bracket-slot tbd" style="font-size:9px;color:var(--blue)">×2 pts</div>
+          </div>
+          <div style="display:flex;align-items:center;color:var(--muted);font-size:18px">›</div>
+          <div class="bracket-stage">
+            <div class="bracket-stage-label">Quarter-final</div>
+            <div class="bracket-slot tbd">4 matches</div>
+            <div class="bracket-slot tbd" style="font-size:9px">Jul 9–11</div>
+            <div class="bracket-slot tbd" style="font-size:9px;color:var(--yellow)">×3 pts</div>
+          </div>
+          <div style="display:flex;align-items:center;color:var(--muted);font-size:18px">›</div>
+          <div class="bracket-stage">
+            <div class="bracket-stage-label">Semi-final</div>
+            <div class="bracket-slot tbd">2 matches</div>
+            <div class="bracket-slot tbd" style="font-size:9px">Jul 14–15</div>
+            <div class="bracket-slot tbd" style="font-size:9px;color:var(--red)">×4 pts</div>
+          </div>
+          <div style="display:flex;align-items:center;color:var(--muted);font-size:18px">›</div>
+          <div class="bracket-stage">
+            <div class="bracket-stage-label">Final</div>
+            <div class="bracket-slot tbd">Jul 19</div>
+            <div class="bracket-slot tbd" style="font-size:9px">MetLife</div>
+            <div class="bracket-slot tbd" style="font-size:9px;color:var(--green)">×5 pts</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div><!-- /scoring -->
+
+  <!-- ═══ ARCHITECTURE ═══ -->
+  <div id="tab-architecture" class="tab-content">
+    <div class="grid-2">
+      <div class="card">
+        <div class="card-title">System Data Flow</div>
+        <div style="margin-top:14px;display:flex;flex-direction:column;gap:10px">
+          <div class="arch-row"><div class="arch-box primary">Browser (index.html)</div><span class="arch-arrow">→ loads →</span><div class="arch-box primary">scripts/app.js</div></div>
+          <div class="arch-row"><div class="arch-box primary">app.js</div><span class="arch-arrow">→ init →</span><div class="arch-box store">Firebase SDK (CDN)</div></div>
+          <div class="arch-row"><div class="arch-box primary">app.js</div><span class="arch-arrow">→ fetch tier 1 →</span><div class="arch-box backend">Apps Script ?action=sync</div></div>
+          <div class="arch-row"><div class="arch-box primary">app.js</div><span class="arch-arrow">→ fetch tier 2 →</span><div class="arch-box store">Firestore collections</div></div>
+          <div class="arch-row"><div class="arch-box primary">app.js</div><span class="arch-arrow">→ fetch tier 3 →</span><div class="arch-box" style="color:var(--muted)">Local JSON / localStorage</div></div>
+          <div style="height:1px;background:var(--border);margin:4px 0"></div>
+          <div class="arch-row"><div class="arch-box backend">Apps Script (scheduled)</div><span class="arch-arrow">→ reads →</span><div class="arch-box" style="color:#ff6b6b">API-Football</div></div>
+          <div class="arch-row"><div class="arch-box backend">Apps Script</div><span class="arch-arrow">→ writes →</span><div class="arch-box store">Firestore results/</div></div>
+          <div class="arch-row"><div class="arch-box backend">Apps Script (daily)</div><span class="arch-arrow">→ calculates →</span><div class="arch-box store">Firestore leaderboard/</div></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Backend File Status</div>
+        <table class="feature-table" style="margin-top:10px">
+          <thead><tr><th>File</th><th>Purpose</th><th>Status</th></tr></thead>
+          <tbody>
+            <tr><td style="font-size:12px;font-family:monospace">src/Code.js</td><td style="font-size:12px;color:var(--muted)">Entry point</td><td><span class="badge badge-done">Ready</span></td></tr>
+            <tr><td style="font-size:12px;font-family:monospace">src/main.js</td><td style="font-size:12px;color:var(--muted)">Router + sync</td><td><span class="badge badge-wip">Bug — ref error</span></td></tr>
+            <tr><td style="font-size:12px;font-family:monospace">src/fixtures.js</td><td style="font-size:12px;color:var(--muted)">Seed + live scores</td><td><span class="badge badge-blocked">Blocked</span></td></tr>
+            <tr><td style="font-size:12px;font-family:monospace">src/leaderboard.js</td><td style="font-size:12px;color:var(--muted)">Point calc</td><td><span class="badge badge-blocked">Stub</span></td></tr>
+            <tr><td style="font-size:12px;font-family:monospace">src/firebase.js</td><td style="font-size:12px;color:var(--muted)">Firestore REST utils</td><td><span class="badge badge-done">Solid</span></td></tr>
+            <tr><td style="font-size:12px;font-family:monospace">src/firebaseConfig.js</td><td style="font-size:12px;color:var(--muted)">Firebase config</td><td><span class="badge badge-done">Ready</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="card" style="grid-column:1/-1">
+        <div class="card-title">Firestore Collections</div>
+        <div class="grid-3" style="margin-top:14px">
+          <div style="background:var(--surface2);border-radius:8px;padding:14px">
+            <div style="font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:700;color:var(--green);margin-bottom:8px">users/{username}</div>
+            <div style="font-size:11px;color:var(--muted);line-height:1.8;font-family:monospace">displayName: string<br>secretCode: string<br>isAdmin: boolean<br>totalPoints: number<br>joinedAt: timestamp</div>
+          </div>
+          <div style="background:var(--surface2);border-radius:8px;padding:14px">
+            <div style="font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:700;color:var(--blue);margin-bottom:8px">fixtures/{matchId}</div>
+            <div style="font-size:11px;color:var(--muted);line-height:1.8;font-family:monospace">matchId: string (sequential)<br>round, group, stage: string<br>date, time, kickoffUTC: string<br>team1, team2: string<br>ground: string<br><span style="color:var(--yellow)">apiFixtureId: string ⚠️ needed</span></div>
+          </div>
+          <div style="background:var(--surface2);border-radius:8px;padding:14px">
+            <div style="font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:700;color:var(--yellow);margin-bottom:8px">predictions/{user}_{matchId}</div>
+            <div style="font-size:11px;color:var(--muted);line-height:1.8;font-family:monospace">username: string<br>matchId: string<br>pred1, pred2: number<br>submittedAt: timestamp<br>pointsAwarded: number|null<br>scoredAt: timestamp|null</div>
+          </div>
+          <div style="background:var(--surface2);border-radius:8px;padding:14px">
+            <div style="font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:700;color:var(--red);margin-bottom:8px">results/{matchId}</div>
+            <div style="font-size:11px;color:var(--muted);line-height:1.8;font-family:monospace">matchId: string<br>score1, score2: number|null<br>status: string (NS/1H/FT…)<br>lastUpdated: timestamp<br><span style="color:var(--red)">⚠️ ID mismatch with API</span></div>
+          </div>
+          <div style="background:var(--surface2);border-radius:8px;padding:14px">
+            <div style="font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:700;color:var(--muted);margin-bottom:8px">leaderboard/current</div>
+            <div style="font-size:11px;color:var(--muted);line-height:1.8;font-family:monospace">players: [{<br>&nbsp;&nbsp;rank, username,<br>&nbsp;&nbsp;displayName,<br>&nbsp;&nbsp;totalPoints,<br>&nbsp;&nbsp;exactScores,<br>&nbsp;&nbsp;correctOutcomes,<br>&nbsp;&nbsp;predicted<br>}]<br>calculatedAt: timestamp</div>
+          </div>
+          <div style="background:var(--surface2);border-radius:8px;padding:14px">
+            <div style="font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:700;color:var(--muted);margin-bottom:8px">teams/{name}</div>
+            <div style="font-size:11px;color:var(--muted);line-height:1.8;font-family:monospace">name: string<br>name_normalised: string<br>fifa_code: string<br>flag_icon: string (emoji)</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div><!-- /architecture -->
+
+</div><!-- /page -->
+
+<script>
+function switchTab(id, btn) {
+  document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('tab-' + id).classList.add('active');
+  btn.classList.add('active');
+}
+</script>
+</body>
+</html>
