@@ -1,0 +1,683 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin Panel — Exodus WC 2026</title>
+  <meta name="robots" content="noindex, nofollow" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800;900&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --primary-red: #DB231D;
+      --primary-red-glow: rgba(219, 35, 29, 0.4);
+      --accent-gold: #E0AA1D;
+      --accent-gold-glow: rgba(224, 170, 29, 0.4);
+      --dark-bg: #07090e;
+      --dark-card: rgba(18, 22, 31, 0.92);
+      --dark-border: rgba(224, 170, 29, 0.22);
+      --light-text: #f3f4f6;
+      --muted-text: #9ca3af;
+      --success: #10b981;
+      --danger: #DB231D;
+      --font-display: 'Barlow Condensed', sans-serif;
+      --font-body: 'DM Sans', sans-serif;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: var(--font-body);
+      background: var(--dark-bg);
+      background-image:
+        radial-gradient(at 10% 20%, rgba(219, 35, 29, 0.08) 0px, transparent 50%),
+        radial-gradient(at 90% 80%, rgba(224, 170, 29, 0.06) 0px, transparent 50%);
+      color: var(--light-text);
+      min-height: 100vh;
+    }
+
+    /* ─── Header ─────────────────────────────────────────── */
+    header {
+      background: rgba(7, 9, 14, 0.9);
+      backdrop-filter: blur(12px);
+      border-bottom: 2px solid var(--dark-border);
+      padding: 16px 40px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    .logo-group { display: flex; align-items: center; gap: 16px; }
+    .logo-text h1 {
+      font-family: var(--font-display);
+      font-size: 20px; font-weight: 800;
+      text-transform: uppercase; letter-spacing: 0.5px;
+    }
+    .logo-text h1 span { color: var(--primary-red); }
+    .logo-text p { font-size: 11px; color: var(--accent-gold); letter-spacing: 1px; text-transform: uppercase; }
+    .admin-badge {
+      background: rgba(219, 35, 29, 0.15);
+      border: 1px solid var(--primary-red);
+      color: var(--primary-red);
+      padding: 4px 12px; border-radius: 20px;
+      font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px;
+    }
+    .header-right { display: flex; align-items: center; gap: 14px; }
+    .user-pill {
+      display: flex; align-items: center; gap: 10px;
+      background: rgba(224, 170, 29, 0.08);
+      border: 1px solid var(--dark-border);
+      border-radius: 20px; padding: 6px 14px 6px 6px;
+      font-size: 13px; font-weight: 600;
+    }
+    .user-avatar {
+      width: 26px; height: 26px; border-radius: 50%;
+      background: var(--accent-gold); color: var(--dark-bg);
+      display: flex; align-items: center; justify-content: center;
+      font-weight: 800; font-size: 11px;
+    }
+    .back-btn {
+      background: rgba(224,170,29,0.08); border: 1px solid var(--dark-border);
+      color: var(--accent-gold); padding: 8px 16px; border-radius: 8px;
+      font-size: 13px; font-weight: 600; cursor: pointer;
+      text-decoration: none; transition: all 0.2s;
+    }
+    .back-btn:hover { background: rgba(224,170,29,0.18); }
+    .logout-btn {
+      background: transparent; color: var(--muted-text);
+      border: none; cursor: pointer; font-size: 16px; padding: 0 4px;
+    }
+    .logout-btn:hover { color: var(--primary-red); }
+
+    /* ─── Main ───────────────────────────────────────────── */
+    main { max-width: 1100px; margin: 40px auto; padding: 0 24px; }
+    .section-title {
+      font-family: var(--font-display);
+      font-size: 32px; font-weight: 800;
+      text-transform: uppercase; letter-spacing: 0.5px;
+      margin-bottom: 24px;
+      border-left: 4px solid var(--primary-red);
+      padding-left: 14px;
+    }
+    .title-accent { color: var(--accent-gold); }
+
+    /* ─── Cards ──────────────────────────────────────────── */
+    .admin-card {
+      background: var(--dark-card);
+      border: 1px solid var(--dark-border);
+      border-radius: 12px; padding: 24px;
+      margin-bottom: 28px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+    }
+    .card-title {
+      font-family: var(--font-display);
+      font-size: 20px; font-weight: 800;
+      color: var(--accent-gold); text-transform: uppercase;
+      margin-bottom: 16px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+      display: flex; align-items: center; gap: 10px;
+    }
+    .badge-count {
+      background: var(--primary-red); color: white;
+      width: 22px; height: 22px; border-radius: 50%;
+      font-size: 12px; font-weight: 800;
+      display: inline-flex; align-items: center; justify-content: center;
+    }
+
+    /* ─── Stats Grid ─────────────────────────────────────── */
+    .stats-grid {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+      gap: 16px; margin-bottom: 28px;
+    }
+    .stat-card {
+      background: var(--dark-card);
+      border: 1px solid var(--dark-border);
+      border-radius: 10px; padding: 18px 20px;
+      text-align: center;
+    }
+    .stat-card .stat-val {
+      font-family: var(--font-display);
+      font-size: 36px; font-weight: 900;
+      color: var(--accent-gold);
+    }
+    .stat-card .stat-label {
+      font-size: 11px; font-weight: 600; color: var(--muted-text);
+      text-transform: uppercase; letter-spacing: 0.5px; margin-top: 4px;
+    }
+
+    /* ─── Table ──────────────────────────────────────────── */
+    .admin-table {
+      width: 100%; border-collapse: collapse; font-size: 13px;
+    }
+    .admin-table th {
+      color: var(--accent-gold); font-weight: 700;
+      text-transform: uppercase; font-size: 11px;
+      letter-spacing: 0.5px; padding: 10px 12px;
+      border-bottom: 1px solid var(--dark-border);
+      text-align: left;
+    }
+    .admin-table td {
+      padding: 12px 12px;
+      border-bottom: 1px solid rgba(255,255,255,0.04);
+      vertical-align: middle;
+    }
+    .admin-table tr:hover { background: rgba(255,255,255,0.02); }
+    .admin-table tr:last-child td { border-bottom: none; }
+
+    /* ─── Buttons ────────────────────────────────────────── */
+    .btn-approve {
+      background: rgba(16,185,129,0.15); color: #34d399;
+      border: 1px solid rgba(16,185,129,0.4);
+      padding: 6px 14px; border-radius: 6px;
+      font-size: 12px; font-weight: 700; cursor: pointer;
+      transition: all 0.2s;
+    }
+    .btn-approve:hover { background: rgba(16,185,129,0.3); }
+    .btn-reject {
+      background: rgba(219,35,29,0.12); color: #f87171;
+      border: 1px solid rgba(219,35,29,0.35);
+      padding: 6px 14px; border-radius: 6px;
+      font-size: 12px; font-weight: 700; cursor: pointer;
+      transition: all 0.2s;
+    }
+    .btn-reject:hover { background: rgba(219,35,29,0.25); }
+    .btn-sync {
+      background: linear-gradient(135deg, var(--primary-red), #a81713);
+      color: white; border: none; padding: 12px 28px;
+      border-radius: 8px; font-family: var(--font-display);
+      font-size: 16px; font-weight: 800; letter-spacing: 0.5px;
+      text-transform: uppercase; cursor: pointer;
+      box-shadow: 0 4px 14px var(--primary-red-glow);
+      transition: all 0.3s;
+    }
+    .btn-sync:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(219,35,29,0.6); }
+    .btn-sync:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+
+    /* ─── Status chips ───────────────────────────────────── */
+    .chip {
+      display: inline-flex; align-items: center;
+      padding: 3px 10px; border-radius: 20px;
+      font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;
+    }
+    .chip-pending { background: rgba(224,170,29,0.15); color: var(--accent-gold); border: 1px solid rgba(224,170,29,0.4); }
+    .chip-approved { background: rgba(16,185,129,0.12); color: #34d399; border: 1px solid rgba(16,185,129,0.35); }
+    .chip-rejected { background: rgba(219,35,29,0.12); color: #f87171; border: 1px solid rgba(219,35,29,0.35); }
+
+    /* ─── Code chip ──────────────────────────────────────── */
+    .code-chip {
+      background: rgba(0,0,0,0.5); color: var(--accent-gold);
+      border: 1px dashed rgba(224,170,29,0.4);
+      padding: 3px 8px; border-radius: 4px;
+      font-family: monospace; font-size: 12px;
+      cursor: pointer; user-select: all;
+    }
+
+    /* ─── Forms ──────────────────────────────────────────── */
+    .form-row { display: flex; gap: 12px; flex-wrap: wrap; align-items: flex-end; margin-bottom: 16px; }
+    .form-group { flex: 1; min-width: 160px; }
+    .form-group label {
+      display: block; font-size: 11px; font-weight: 700;
+      color: var(--muted-text); text-transform: uppercase;
+      letter-spacing: 0.5px; margin-bottom: 6px;
+    }
+    .form-group input, .form-group select {
+      width: 100%; padding: 10px 14px;
+      background: rgba(0,0,0,0.4); border: 1px solid var(--dark-border);
+      border-radius: 8px; color: var(--light-text); font-size: 13px;
+      font-family: var(--font-body); transition: all 0.2s;
+    }
+    .form-group input:focus, .form-group select:focus {
+      outline: none;
+      border-color: var(--accent-gold);
+      box-shadow: 0 0 0 3px var(--accent-gold-glow);
+    }
+    .form-group select option { background: #0d1120; }
+    .btn-add {
+      background: rgba(224,170,29,0.12); color: var(--accent-gold);
+      border: 1px solid var(--dark-border); padding: 10px 20px;
+      border-radius: 8px; font-size: 13px; font-weight: 700;
+      cursor: pointer; transition: all 0.2s; white-space: nowrap;
+    }
+    .btn-add:hover { background: rgba(224,170,29,0.25); border-color: var(--accent-gold); }
+
+    /* ─── Toast ──────────────────────────────────────────── */
+    #toast {
+      position: fixed; bottom: 30px; right: 30px;
+      background: #1e293b; border-left: 4px solid var(--accent-gold);
+      padding: 14px 20px; border-radius: 6px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.4);
+      font-size: 13px; font-weight: 600; z-index: 9999;
+      display: none; max-width: 320px;
+    }
+    #toast.show { display: block; }
+    #toast.success { border-color: var(--success); }
+    #toast.error { border-color: var(--danger); }
+
+    /* ─── Auth gate ──────────────────────────────────────── */
+    #auth-gate {
+      display: flex; justify-content: center; align-items: center; min-height: 100vh;
+    }
+    .auth-card {
+      background: var(--dark-card); border: 2px solid var(--dark-border);
+      border-radius: 12px; padding: 40px; max-width: 400px; width: 100%;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.6);
+    }
+    .auth-card h2 {
+      font-family: var(--font-display); font-size: 28px; font-weight: 900;
+      text-transform: uppercase; margin-bottom: 6px;
+    }
+    .auth-card p { color: var(--muted-text); font-size: 13px; margin-bottom: 24px; }
+    .auth-card .btn-login {
+      width: 100%; padding: 12px;
+      background: linear-gradient(135deg, var(--primary-red), #a81713);
+      color: white; border: none; border-radius: 8px;
+      font-family: var(--font-display); font-size: 16px; font-weight: 800;
+      text-transform: uppercase; cursor: pointer; transition: all 0.3s;
+      box-shadow: 0 4px 14px var(--primary-red-glow);
+    }
+    .auth-error {
+      background: rgba(219,35,29,0.15); border: 1px solid var(--primary-red);
+      color: #fca5a5; padding: 10px; border-radius: 6px;
+      font-size: 12px; margin-bottom: 16px; display: none;
+    }
+
+    /* ─── Misc ───────────────────────────────────────────── */
+    .empty-note { color: var(--muted-text); padding: 16px 0; font-size: 13px; }
+    .divider { height: 1px; background: rgba(255,255,255,0.06); margin: 20px 0; }
+    #main-content { display: none; }
+    .sync-result {
+      margin-top: 14px; padding: 12px 16px; border-radius: 8px;
+      font-size: 13px; display: none;
+      background: rgba(16,185,129,0.08); border: 1px solid rgba(16,185,129,0.3);
+      color: #34d399;
+    }
+  </style>
+</head>
+<body>
+
+<!-- ─── Auth Gate ──────────────────────────────────────────────── -->
+<div id="auth-gate">
+  <div class="auth-card">
+    <h2>Admin <span style="color:var(--primary-red)">Access</span></h2>
+    <p>Enter your admin username and secret code to continue.</p>
+    <div class="auth-error" id="auth-error"></div>
+    <div class="form-group" style="margin-bottom:14px">
+      <label>Username</label>
+      <input type="text" id="admin-username" placeholder="admin username" />
+    </div>
+    <div class="form-group" style="margin-bottom:20px">
+      <label>Secret Code</label>
+      <input type="password" id="admin-code" placeholder="your secret code" />
+    </div>
+    <button class="btn-login" onclick="doAdminLogin()">Enter Admin Panel</button>
+  </div>
+</div>
+
+<!-- ─── Main Panel ─────────────────────────────────────────────── -->
+<div id="main-content">
+  <header>
+    <div class="logo-group">
+      <div class="logo-text">
+        <h1>Exodus <span>WC</span> 2026</h1>
+        <p>Admin Panel</p>
+      </div>
+      <span class="admin-badge">🔐 Admin</span>
+    </div>
+    <div class="header-right">
+      <a href="/" class="back-btn">← Back to App</a>
+      <div class="user-pill">
+        <div class="user-avatar" id="header-avatar">AD</div>
+        <span id="header-name">Admin</span>
+        <button class="logout-btn" onclick="doLogout()" title="Logout">✕</button>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <div class="section-title">Admin <span class="title-accent">Control Panel</span></div>
+
+    <!-- Stats Overview -->
+    <div class="stats-grid" id="stats-grid">
+      <div class="stat-card"><div class="stat-val" id="stat-users">—</div><div class="stat-label">Total Players</div></div>
+      <div class="stat-card"><div class="stat-val" id="stat-pending">—</div><div class="stat-label">Pending Requests</div></div>
+      <div class="stat-card"><div class="stat-val" id="stat-predictions">—</div><div class="stat-label">Total Predictions</div></div>
+      <div class="stat-card"><div class="stat-val" id="stat-results">—</div><div class="stat-label">Results Synced</div></div>
+    </div>
+
+    <!-- Score Sync -->
+    <div class="admin-card">
+      <div class="card-title">⚡ Score Sync</div>
+      <p style="color:var(--muted-text);font-size:13px;margin-bottom:16px">Manually trigger a live score fetch and leaderboard recalculation. The Cloudflare Worker also runs this automatically every 5 minutes.</p>
+      <div style="display:flex;align-items:center;gap:16px;flex-wrap:wrap">
+        <div class="form-group" style="min-width:260px;max-width:380px;margin-bottom:0">
+          <label>Worker URL</label>
+          <input type="text" id="worker-url" placeholder="https://exoduswcpredictor.workers.dev" />
+        </div>
+        <div class="form-group" style="min-width:200px;max-width:280px;margin-bottom:0">
+          <label>Seed Token</label>
+          <input type="password" id="seed-token" placeholder="xds-secret-admin-token-123" />
+        </div>
+        <button class="btn-sync" id="sync-btn" onclick="doSync()">⚡ Sync Scores Now</button>
+      </div>
+      <div class="sync-result" id="sync-result"></div>
+    </div>
+
+    <!-- Account Requests -->
+    <div class="admin-card">
+      <div class="card-title">📋 Account Requests <span class="badge-count" id="pending-count">0</span></div>
+      <div id="requests-table-wrap">
+        <p class="empty-note">Loading requests...</p>
+      </div>
+    </div>
+
+    <!-- Add User Directly -->
+    <div class="admin-card">
+      <div class="card-title">➕ Add New Player</div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Username</label>
+          <input type="text" id="new-username" placeholder="e.g. jdoe" />
+        </div>
+        <div class="form-group">
+          <label>Display Name</label>
+          <input type="text" id="new-displayname" placeholder="e.g. John Doe" />
+        </div>
+        <div class="form-group">
+          <label>Secret Code</label>
+          <input type="text" id="new-code" placeholder="leave blank to generate" />
+        </div>
+        <div style="display:flex;align-items:flex-end;padding-bottom:0">
+          <button class="btn-add" onclick="addUser()">Add Player</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- All Players -->
+    <div class="admin-card">
+      <div class="card-title">👥 All Players</div>
+      <div id="users-table-wrap">
+        <p class="empty-note">Loading users...</p>
+      </div>
+    </div>
+  </main>
+</div>
+
+<div id="toast"></div>
+
+<script>
+// ─── Config ─────────────────────────────────────────────────────────
+const SB_URL = localStorage.getItem('exodus_supabase_url') || '';
+const SB_KEY = localStorage.getItem('exodus_supabase_anon_key') || '';
+
+function sbHeaders(extra = {}) {
+  return { 'apikey': SB_KEY, 'Authorization': `Bearer ${SB_KEY}`, 'Content-Type': 'application/json', ...extra };
+}
+
+async function sbSelect(table, filter = '') {
+  const res = await fetch(`${SB_URL}/rest/v1/${table}?${filter}`, { headers: sbHeaders() });
+  if (!res.ok) throw new Error(`Supabase ${table} ${res.status}`);
+  return res.json();
+}
+async function sbUpsert(table, data) {
+  const res = await fetch(`${SB_URL}/rest/v1/${table}`, {
+    method: 'POST',
+    headers: sbHeaders({ 'Prefer': 'resolution=merge-duplicates,return=representation' }),
+    body: JSON.stringify(Array.isArray(data) ? data : [data])
+  });
+  if (!res.ok) { const e = await res.json(); throw new Error(e.message || `Supabase ${table} ${res.status}`); }
+  return res.json();
+}
+async function sbUpdate(table, data, match) {
+  const qs = Object.entries(match).map(([k,v]) => `${k}=eq.${encodeURIComponent(v)}`).join('&');
+  const res = await fetch(`${SB_URL}/rest/v1/${table}?${qs}`, {
+    method: 'PATCH',
+    headers: sbHeaders({ 'Prefer': 'return=representation' }),
+    body: JSON.stringify(data)
+  });
+  if (!res.ok) throw new Error(`Supabase update ${table} ${res.status}`);
+  return res.json();
+}
+
+// ─── Toast ───────────────────────────────────────────────────────────
+function showToast(msg, type = 'success') {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = `show ${type}`;
+  clearTimeout(window._toastTimer);
+  window._toastTimer = setTimeout(() => t.className = '', 3500);
+}
+
+// ─── Auth ────────────────────────────────────────────────────────────
+let currentAdmin = null;
+
+async function doAdminLogin() {
+  const username = document.getElementById('admin-username').value.trim().toLowerCase();
+  const code = document.getElementById('admin-code').value.trim();
+  const errEl = document.getElementById('auth-error');
+  errEl.style.display = 'none';
+
+  if (!username || !code) { errEl.textContent = 'Fill in both fields.'; errEl.style.display = 'block'; return; }
+  if (!SB_URL || !SB_KEY) {
+    errEl.textContent = 'Supabase not configured. Set credentials in the main app Settings first.';
+    errEl.style.display = 'block'; return;
+  }
+
+  try {
+    const users = await sbSelect('users', `username=eq.${encodeURIComponent(username)}`);
+    const user = users?.[0];
+    if (!user || user.secretCode !== code) {
+      errEl.textContent = 'Invalid username or secret code.';
+      errEl.style.display = 'block'; return;
+    }
+    if (!user.isAdmin) {
+      errEl.textContent = 'This account does not have admin privileges.';
+      errEl.style.display = 'block'; return;
+    }
+    currentAdmin = user;
+    document.getElementById('auth-gate').style.display = 'none';
+    document.getElementById('main-content').style.display = 'block';
+    document.getElementById('header-avatar').textContent = user.displayName.slice(0, 2).toUpperCase();
+    document.getElementById('header-name').textContent = user.displayName;
+
+    // Load saved worker config
+    document.getElementById('worker-url').value = localStorage.getItem('exodus_worker_url') || '';
+    document.getElementById('seed-token').value = localStorage.getItem('exodus_seed_token') || '';
+
+    await loadAll();
+  } catch (e) {
+    errEl.textContent = `Error: ${e.message}`;
+    errEl.style.display = 'block';
+  }
+}
+
+function doLogout() {
+  currentAdmin = null;
+  document.getElementById('main-content').style.display = 'none';
+  document.getElementById('auth-gate').style.display = 'flex';
+  document.getElementById('admin-username').value = '';
+  document.getElementById('admin-code').value = '';
+}
+
+// ─── Load All Data ────────────────────────────────────────────────────
+async function loadAll() {
+  try {
+    const [users, requests, predictions, results] = await Promise.all([
+      sbSelect('users', 'select=username,displayName,isAdmin,totalPoints'),
+      sbSelect('account_requests', 'order=createdAt.desc'),
+      sbSelect('predictions', 'select=id'),
+      sbSelect('results', 'select=matchId'),
+    ]);
+
+    document.getElementById('stat-users').textContent = users.length;
+    document.getElementById('stat-predictions').textContent = predictions.length;
+    document.getElementById('stat-results').textContent = results.length;
+
+    const pending = requests.filter(r => r.status === 'pending');
+    document.getElementById('stat-pending').textContent = pending.length;
+    document.getElementById('pending-count').textContent = pending.length;
+
+    renderRequestsTable(requests);
+    renderUsersTable(users);
+  } catch (e) {
+    showToast(`Failed to load data: ${e.message}`, 'error');
+  }
+}
+
+// ─── Render Requests Table ────────────────────────────────────────────
+function renderRequestsTable(requests) {
+  const wrap = document.getElementById('requests-table-wrap');
+  if (!requests.length) { wrap.innerHTML = '<p class="empty-note">No account requests yet.</p>'; return; }
+  const rows = requests.map(r => `
+    <tr id="req-row-${r.username}">
+      <td><strong>${esc(r.username)}</strong></td>
+      <td>${esc(r.displayName)}</td>
+      <td style="color:var(--muted-text)">${esc(r.note || '—')}</td>
+      <td><span class="chip chip-${r.status}">${r.status}</span></td>
+      <td><span class="code-chip" title="Click to copy" onclick="copyText('${esc(r.secretCode)}')">${esc(r.secretCode)}</span></td>
+      <td>${new Date(r.createdAt).toLocaleDateString()}</td>
+      <td>
+        ${r.status === 'pending' ? `
+          <button class="btn-approve" onclick="resolveRequest('${esc(r.username)}', true)">Approve</button>
+          <button class="btn-reject" onclick="resolveRequest('${esc(r.username)}', false)" style="margin-left:6px">Reject</button>
+        ` : '—'}
+      </td>
+    </tr>
+  `).join('');
+  wrap.innerHTML = `
+    <table class="admin-table">
+      <thead><tr>
+        <th>Username</th><th>Display Name</th><th>Note</th>
+        <th>Status</th><th>Secret Code</th><th>Submitted</th><th>Actions</th>
+      </tr></thead>
+      <tbody>${rows}</tbody>
+    </table>
+  `;
+}
+
+// ─── Render Users Table ───────────────────────────────────────────────
+function renderUsersTable(users) {
+  const wrap = document.getElementById('users-table-wrap');
+  if (!users.length) { wrap.innerHTML = '<p class="empty-note">No players yet.</p>'; return; }
+  const rows = users.map(u => `
+    <tr>
+      <td><strong>${esc(u.username)}</strong></td>
+      <td>${esc(u.displayName)}</td>
+      <td>${u.isAdmin ? '<span class="chip chip-approved">Admin</span>' : '<span class="chip chip-pending">Player</span>'}</td>
+      <td><strong style="color:var(--accent-gold)">${u.totalPoints ?? 0}</strong></td>
+    </tr>
+  `).join('');
+  wrap.innerHTML = `
+    <table class="admin-table">
+      <thead><tr><th>Username</th><th>Display Name</th><th>Role</th><th>Points</th></tr></thead>
+      <tbody>${rows}</tbody>
+    </table>
+  `;
+}
+
+// ─── Resolve Request ──────────────────────────────────────────────────
+async function resolveRequest(username, approved) {
+  try {
+    const requests = await sbSelect('account_requests', `username=eq.${encodeURIComponent(username)}`);
+    const req = requests?.[0];
+    if (!req) throw new Error('Request not found');
+
+    await sbUpdate('account_requests', { status: approved ? 'approved' : 'rejected', resolvedAt: new Date().toISOString() }, { username });
+
+    if (approved) {
+      await sbUpsert('users', [{
+        username: req.username,
+        displayName: req.displayName,
+        secretCode: req.secretCode,
+        isAdmin: false,
+        totalPoints: 0, exactScores: 0, correctOutcomes: 0, predicted: 0, scored: 0,
+        joinedAt: new Date().toISOString()
+      }]);
+      showToast(`✅ Approved ${req.username}. Code: ${req.secretCode}`, 'success');
+    } else {
+      showToast(`Rejected request for ${req.username}`, 'error');
+    }
+
+    await loadAll();
+  } catch (e) {
+    showToast(`Error: ${e.message}`, 'error');
+  }
+}
+
+// ─── Add User ─────────────────────────────────────────────────────────
+async function addUser() {
+  const username = document.getElementById('new-username').value.trim().toLowerCase();
+  const displayName = document.getElementById('new-displayname').value.trim();
+  let secretCode = document.getElementById('new-code').value.trim();
+
+  if (!username || !displayName) { showToast('Username and Display Name required', 'error'); return; }
+  if (!secretCode) {
+    secretCode = 'XDS-' + Math.random().toString(16).slice(2, 8).toUpperCase();
+  }
+
+  try {
+    await sbUpsert('users', [{ username, displayName, secretCode, isAdmin: false, totalPoints: 0, exactScores: 0, correctOutcomes: 0, predicted: 0, scored: 0, joinedAt: new Date().toISOString() }]);
+    showToast(`✅ Added ${displayName}. Code: ${secretCode}`, 'success');
+    document.getElementById('new-username').value = '';
+    document.getElementById('new-displayname').value = '';
+    document.getElementById('new-code').value = '';
+    await loadAll();
+  } catch (e) {
+    showToast(`Failed: ${e.message}`, 'error');
+  }
+}
+
+// ─── Score Sync ───────────────────────────────────────────────────────
+async function doSync() {
+  const workerUrl = document.getElementById('worker-url').value.trim();
+  const token = document.getElementById('seed-token').value.trim();
+  if (!workerUrl) { showToast('Enter the Worker URL first', 'error'); return; }
+
+  localStorage.setItem('exodus_worker_url', workerUrl);
+  localStorage.setItem('exodus_seed_token', token);
+
+  const btn = document.getElementById('sync-btn');
+  const resultEl = document.getElementById('sync-result');
+  btn.disabled = true;
+  btn.textContent = '⏳ Syncing...';
+  resultEl.style.display = 'none';
+
+  try {
+    const res = await fetch(`${workerUrl.replace(/\/$/, '')}/sync-scores`, {
+      headers: token ? { 'Authorization': `Bearer ${token}` } : {}
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || `HTTP ${res.status}`);
+    resultEl.style.display = 'block';
+    resultEl.textContent = `✅ Sync complete! Matched: ${data.matched ?? '?'} matches, Updated: ${data.updated ?? '?'} results.`;
+    showToast('Scores synced successfully!', 'success');
+    await loadAll();
+  } catch (e) {
+    resultEl.style.display = 'block';
+    resultEl.style.background = 'rgba(219,35,29,0.08)';
+    resultEl.style.borderColor = 'rgba(219,35,29,0.3)';
+    resultEl.style.color = '#f87171';
+    resultEl.textContent = `❌ Sync failed: ${e.message}`;
+    showToast(`Sync failed: ${e.message}`, 'error');
+  } finally {
+    btn.disabled = false;
+    btn.textContent = '⚡ Sync Scores Now';
+  }
+}
+
+// ─── Helpers ──────────────────────────────────────────────────────────
+function esc(v) {
+  return String(v ?? '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+function copyText(text) {
+  navigator.clipboard.writeText(text).then(() => showToast(`Copied: ${text}`, 'success'));
+}
+
+// ─── Enter key on auth form ────────────────────────────────────────────
+document.addEventListener('keydown', e => {
+  if (e.key === 'Enter' && document.getElementById('auth-gate').style.display !== 'none') doAdminLogin();
+});
+</script>
+</body>
+</html>

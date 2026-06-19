@@ -106,7 +106,6 @@ export default function App() {
   const [predictions, setPredictions] = useState({});
   const [leaderboard, setLeaderboard] = useState([]);
   const [users, setUsers] = useState([]);
-  const [accountRequests, setAccountRequests] = useState([]);
 
   // --- UI Filters and Flags ---
   const [predFilter, setPredFilter] = useState("all"); // 'all', 'open', 'locked'
@@ -165,12 +164,6 @@ export default function App() {
     }
   }, [session, supabaseClient]);
 
-  // --- Fetch account requests if user is Admin ---
-  useEffect(() => {
-    if (session?.isAdmin && supabaseClient && activeTab === "admin") {
-      fetchAccountRequests();
-    }
-  }, [session, activeTab, supabaseClient]);
 
   // --- Helper to show messages ---
   const showToast = (message, type = "success") => {
@@ -329,20 +322,6 @@ export default function App() {
     }
   };
 
-  // --- Fetch Account Requests (Admin Only) ---
-  const fetchAccountRequests = async () => {
-    try {
-      const { data, error } = await supabaseClient
-        .from("account_requests")
-        .select("*")
-        .order("createdAt", { ascending: false });
-
-      if (error) throw error;
-      if (data) setAccountRequests(data);
-    } catch (err) {
-      console.error("Failed to load account requests:", err);
-    }
-  };
 
   // --- Save settings changes ---
   const handleSaveSettings = () => {
@@ -516,45 +495,6 @@ export default function App() {
     }
   };
 
-  // --- Approve / Reject account requests (Admin) ---
-  const handleResolveAccountRequest = async (request, approved) => {
-    if (!supabaseClient) return;
-
-    try {
-      const status = approved ? "approved" : "rejected";
-      
-      // Update account requests table
-      const { error: reqError } = await supabaseClient
-        .from("account_requests")
-        .update({ status, resolvedAt: new Date().toISOString() })
-        .eq("username", request.username);
-
-      if (reqError) throw reqError;
-
-      // If approved, insert profile row into the users table
-      if (approved) {
-        const { error: userError } = await supabaseClient.from("users").upsert({
-          username: request.username,
-          displayName: request.displayName,
-          secretCode: request.secretCode,
-          isAdmin: false,
-          joinedAt: new Date().toISOString()
-        });
-
-        if (userError) throw userError;
-        showToast(`Approved ${request.username}. Code: ${request.secretCode}`, "success");
-      } else {
-        showToast(`Rejected request for ${request.username}`, "warning");
-      }
-
-      // Refresh list
-      fetchAccountRequests();
-      loadPublicData();
-    } catch (err) {
-      console.error(err);
-      showToast("Failed to resolve request", "error");
-    }
-  };
 
   // --- Trigger Score Sync via worker ---
   const handleRequestSync = async () => {
@@ -1018,9 +958,15 @@ export default function App() {
             Bracket
           </button>
           {session.isAdmin && (
-            <button className={`nav-btn ${activeTab === "admin" ? "active" : ""}`} onClick={() => setActiveTab("admin")} style={{ borderLeft: "1px solid rgba(255,255,255,0.15)" }}>
-              Admin Panel
-            </button>
+            <a
+              href="/admin.html"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="nav-btn"
+              style={{ borderLeft: "1px solid rgba(255,255,255,0.15)", color: "var(--primary-red)", textDecoration: "none" }}
+            >
+              🔐 Admin Panel
+            </a>
           )}
         </nav>
 
@@ -1265,49 +1211,7 @@ export default function App() {
           </div>
         )}
 
-        {/* Admin panel */}
-        {activeTab === "admin" && session.isAdmin && (
-          <div className="view active">
-            <div className="section-title">Admin <span className="title-accent">Verification</span> Panel</div>
-            
-            <div className="group-standings-card" style={{ marginBottom: "30px" }}>
-              <div className="group-title" style={{ fontSize: "20px" }}>Pending Account Requests ({accountRequests.length})</div>
-              {accountRequests.filter((r) => r.status === "pending").length === 0 ? (
-                <p style={{ color: "var(--muted-text)", padding: "10px" }}>No pending account requests.</p>
-              ) : (
-                <table style={{ width: "100%", borderCollapse: "collapse", color: "var(--light-text)" }}>
-                  <thead>
-                    <tr style={{ color: "var(--accent-gold)", borderBottom: "1px solid var(--dark-border)" }}>
-                      <th style={{ padding: "10px", textAlign: "left" }}>Username</th>
-                      <th style={{ padding: "10px", textAlign: "left" }}>Display Name</th>
-                      <th style={{ padding: "10px", textAlign: "left" }}>Note / Discord ID</th>
-                      <th style={{ padding: "10px", textAlign: "center" }}>Actions</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {accountRequests
-                      .filter((r) => r.status === "pending")
-                      .map((req) => (
-                        <tr key={req.username} style={{ borderBottom: "1px solid rgba(255,255,255,0.05)" }}>
-                          <td style={{ padding: "10px" }}>{req.username}</td>
-                          <td style={{ padding: "10px" }}>{req.displayName}</td>
-                          <td style={{ padding: "10px" }}>{req.note || "—"}</td>
-                          <td style={{ padding: "10px", textAlign: "center", display: "flex", gap: "10px", justifyContent: "center" }}>
-                            <button className="sync-btn" onClick={() => handleResolveAccountRequest(req, true)}>
-                              Approve
-                            </button>
-                            <button className="sync-btn" style={{ background: "rgba(219,35,29,0.15)", borderColor: "var(--primary-red)" }} onClick={() => handleResolveAccountRequest(req, false)}>
-                              Reject
-                            </button>
-                          </td>
-                        </tr>
-                      ))}
-                  </tbody>
-                </table>
-              )}
-            </div>
-          </div>
-        )}
+
       </main>
 
       {/* Settings modal */}
